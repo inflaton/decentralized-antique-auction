@@ -22,8 +22,6 @@ Set up environment variables in .env
 ```
 cp .env.example .env
 cat .env
-INFURA_API_KEY=
-BESU_PRIVATE_KEY=
 METER_PRIVATE_KEY=
 ROPSTEN_PRIVATE_KEY=
 RINKEBY_PRIVATE_KEY=
