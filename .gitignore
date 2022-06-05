@@ -1,0 +1,11 @@
+# AntiqueStore
+node_modules
+yarn-error.log
+dist
+# OS
+.DS_Store
+
+.env
+.env*local
+build
+package-lock.json
