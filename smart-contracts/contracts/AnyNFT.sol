@@ -2,12 +2,20 @@
 pragma solidity ^0.8.1;
 
 import '@openzeppelin/contracts/token/ERC721/IERC721.sol';
+import './IERC2981Royalties.sol';
 
-abstract contract AnyNFT is IERC721 {
+abstract contract AnyNFT is IERC721, IERC2981Royalties {
     function mintNFT(address recipient, string memory tokenURI)
         public
         virtual
         returns (uint256);
+
+    function mintNFTWideRoyalty(
+        address to,
+        address royaltyRecipient,
+        uint256 royaltyValue,
+        string memory tokenURI
+    ) public virtual returns (uint256);
 }
 
 abstract contract AnyNFTMarket {
