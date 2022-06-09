@@ -54,7 +54,7 @@ contract AntiqueNFT is
     /// @param to the recipient of the token
     /// @param royaltyRecipient the recipient for royalties (if royaltyValue > 0)
     /// @param royaltyValue the royalties asked for (EIP2981)
-    function mintNFTWideRoyalty(
+    function mintNFTWithRoyalty(
         address to,
         address royaltyRecipient,
         uint256 royaltyValue,

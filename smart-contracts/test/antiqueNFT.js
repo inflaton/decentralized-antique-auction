@@ -1,13 +1,14 @@
-var AntiqueNFT = artifacts.require('./AntiqueNFT.sol')
-var AntiqueStore = artifacts.require('./AntiqueStore.sol')
+let AntiqueNFT = artifacts.require('./AntiqueNFT.sol')
+let AntiqueStore = artifacts.require('./AntiqueStore.sol')
 
 contract('AntiqueNFT', function (accounts) {
-  var instance = null // store the AntiqueStore contract instance
-  var mainAccount = accounts[0]
-  var bidder1 = accounts[1]
-  var bidder2 = accounts[2]
-  var latestAntiqueId
-  var nftInst
+  let instance = null // store the AntiqueStore contract instance
+  let mainAccount = accounts[0]
+  let bidder1 = accounts[1]
+  let bidder2 = accounts[2]
+  let latestAntiqueId
+  let resellingAntiqueId
+  let nftInst
 
   // console.log(`accounts: ${accounts}`)
   it('should properly init contracts', function () {
@@ -22,25 +23,26 @@ contract('AntiqueNFT', function (accounts) {
         return instance.nftContract.call()
       })
       .then(function (result) {
-        // storing the current number on the var antiquesBefore
+        // storing the current number on the let antiquesBefore
         assert.equal(result, nftInst.address, 'nftContract not properly set up')
       })
   })
 
   it('should add an antique', function () {
-    var antiquesBefore = null
+    let antiquesBefore = null
 
     // calling the smart contract function to get the current number of antiques
     return instance.antiqueId
       .call()
       .then(function (result) {
-        // storing the current number on the var antiquesBefore
+        // storing the current number on the let antiquesBefore
         antiquesBefore = result.toNumber()
 
         return instance.sellAntique(
           'ipfs://QmUwkKTgy1tYHLZLcFS8w3QagnSPzyEZfHJkQxWxLWWZik',
           2000000000000000,
           5000000000000000,
+          250, // royalty = 2.5%
           1663991618,
           {
             from: mainAccount,
@@ -99,13 +101,10 @@ contract('AntiqueNFT', function (accounts) {
 
   it('should bid an antique 2', function () {
     return instance
-      .bidAntique(
-        latestAntiqueId,
-        {
-          from: bidder2,
-          value: 5000000000000000,
-        },
-      )
+      .bidAntique(latestAntiqueId, {
+        from: bidder2,
+        value: 5000000000000000,
+      })
       .then(function (result) {
         // console.log(`bidAntique: ${JSON.stringify(result, 0, 2)}`)
         assert.equal(
@@ -164,21 +163,19 @@ contract('AntiqueNFT', function (accounts) {
       })
   })
 
-  it('should resell after winning', function () {
-    return instance
-      .resellAntique(
-        latestAntiqueId,
-        5000000000000000,
-        7000000000000000,
-        1673991618,
-        {
-          from: bidder2,
-        },
-      )
-      .then(function (result) {
-        // console.log(`resellAntique: ${JSON.stringify(result, 0, 2)}`)
-        assert.equal(result.receipt.status, true, 'resellAntique failed')
-      })
+  it('should resell after winning', async function () {
+    let result = await instance.resellAntique(
+      latestAntiqueId,
+      5000000000000000,
+      7000000000000000,
+      1673991618,
+      {
+        from: bidder2,
+      },
+    )
+    // console.log(`resellAntique: ${JSON.stringify(result, 0, 2)}`)
+    assert.equal(result.receipt.status, true, 'resellAntique failed')
+    resellingAntiqueId = result.receipt.logs[0].args.antiqueId
   })
 
   it('should not retrieve my bids after reselling', function () {
@@ -216,5 +213,30 @@ contract('AntiqueNFT', function (accounts) {
         // console.log(`getMyBids: ${JSON.stringify(result, 0, 2)}`)
         assert.equal(result.length, 0, 'getMyBids after withdrawal failed')
       })
+  })
+
+  it('creator should receive royalty for reselling', async function () {
+    const balanceBefore = await web3.eth.getBalance(mainAccount)
+    // console.log(`balanceBefore: ${balanceBefore} ${typeof balanceBefore}`)
+
+    let result = await instance.bidAntique(resellingAntiqueId, {
+      from: bidder1,
+      value: 8000000000000000,
+    })
+    assert.equal(result.receipt.status, true, 'bidAntique failed')
+
+    result = await nftInst.endAuction(resellingAntiqueId, {
+      from: bidder2,
+    })
+    assert.equal(result.receipt.status, true, 'endAuction failed')
+
+    const balanceAfter = await web3.eth.getBalance(mainAccount)
+    // console.log(`balanceAfter: ${balanceBefore} ${typeof balanceAfter}`)
+
+    assert.equal(
+      web3.utils.toBN(balanceAfter) - web3.utils.toBN(balanceBefore),
+      web3.utils.toBN('200000000000000'),
+      'endAuction failed',
+    )
   })
 }) // end AntiqueStore contract

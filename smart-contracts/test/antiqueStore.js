@@ -7,6 +7,7 @@ contract('AntiqueStore', function (accounts) {
   var bidder1 = accounts[1]
   var bidder2 = accounts[2]
   var latestAntiqueId
+  let resellingAntiqueId
   var nftInst
 
   // console.log(`accounts: ${accounts}`)
@@ -47,6 +48,7 @@ contract('AntiqueStore', function (accounts) {
           'ipfs://QmUwkKTgy1tYHLZLcFS8w3QagnSPzyEZfHJkQxWxLWWZik',
           2000000000000000,
           5000000000000000,
+          0,
           1663991618,
           {
             from: mainAccount,
@@ -105,13 +107,10 @@ contract('AntiqueStore', function (accounts) {
 
   it('should bid an antique 2', function () {
     return instance
-      .bidAntique(
-        latestAntiqueId,
-        {
-          from: bidder2,
-          value: 5000000000000000,
-        },
-      )
+      .bidAntique(latestAntiqueId, {
+        from: bidder2,
+        value: 5000000000000000,
+      })
       .then(function (result) {
         // console.log(`bidAntique: ${JSON.stringify(result, 0, 2)}`)
         assert.equal(
@@ -184,6 +183,7 @@ contract('AntiqueStore', function (accounts) {
       .then(function (result) {
         // console.log(`resellAntique: ${JSON.stringify(result, 0, 2)}`)
         assert.equal(result.receipt.status, true, 'resellAntique failed')
+        resellingAntiqueId = result.receipt.logs[0].args.antiqueId
       })
   })
 
@@ -222,5 +222,36 @@ contract('AntiqueStore', function (accounts) {
         // console.log(`getMyBids: ${JSON.stringify(result, 0, 2)}`)
         assert.equal(result.length, 0, 'getMyBids after withdrawal failed')
       })
+  })
+
+  it('creator should not receive royalty for reselling', async function () {
+    const balanceBefore = await web3.eth.getBalance(mainAccount)
+    // console.log(`balanceBefore: ${balanceBefore} ${typeof balanceBefore}`)
+
+    let result = await instance.bidAntique(resellingAntiqueId, {
+      from: bidder1,
+      value: 8000000000000000,
+    })
+    assert.equal(result.receipt.status, true, 'bidAntique failed')
+
+    result = await nftInst.approve(instance.address, resellingAntiqueId, {
+      from: bidder2,
+    })
+    // console.log(`approve: ${JSON.stringify(result, 0, 2)}`)
+    assert.equal(result.receipt.status, true, 'approve failed')
+
+    result = await instance.endAuction(resellingAntiqueId, {
+      from: bidder2,
+    })
+    assert.equal(result.receipt.status, true, 'endAuction failed')
+
+    const balanceAfter = await web3.eth.getBalance(mainAccount)
+    // console.log(`balanceAfter: ${balanceBefore} ${typeof balanceAfter}`)
+
+    assert.equal(
+      web3.utils.toBN(balanceAfter) - web3.utils.toBN(balanceBefore),
+      0,
+      'endAuction failed',
+    )
   })
 }) // end AntiqueStore contract

@@ -10,7 +10,7 @@ abstract contract AnyNFT is IERC721, IERC2981Royalties {
         virtual
         returns (uint256);
 
-    function mintNFTWideRoyalty(
+    function mintNFTWithRoyalty(
         address to,
         address royaltyRecipient,
         uint256 royaltyValue,

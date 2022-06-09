@@ -85,10 +85,16 @@ contract AntiqueStore is AnyNFTMarket {
         string memory tokenURI,
         uint256 startingPrice,
         uint256 reservePrice,
+        uint256 royaltyValue,
         uint256 auctionEndTime
     ) public returns (bool success) {
         AnyNFT anyNFT = AnyNFT(nftContract);
-        uint256 tokenId = anyNFT.mintNFT(msg.sender, tokenURI);
+        uint256 tokenId = anyNFT.mintNFTWithRoyalty(
+            msg.sender,
+            msg.sender,
+            royaltyValue,
+            tokenURI
+        );
 
         return
             _newAntique(
@@ -141,14 +147,14 @@ contract AntiqueStore is AnyNFTMarket {
                 keccak256(abi.encodePacked(b));
         }
     }
-    
+
     function _bidAntique(uint256 _antiqueId, uint256 newBid)
         internal
         returns (bool)
     {
         Antique storage antique = antiques[_antiqueId];
 
-        require(antique.forSale == true, 'The antique is for sale');
+        require(antique.forSale == true, 'The antique is not for sale');
 
         require(
             !antique.auctionEnded && block.timestamp <= antique.auctionEndTime,
@@ -252,9 +258,30 @@ contract AntiqueStore is AnyNFTMarket {
         mapping(address => uint256)
             storage pendingReturns = antiquePendingReturns[_antiqueId];
 
-        payable(antique.owner).transfer(antique.highestBid);
-        pendingReturns[antique.highestBidder] = 0;
+        AnyNFT anyNFT = AnyNFT(nftContract);
+        if (toTransferNFT) {
+            anyNFT.transferFrom(
+                msg.sender,
+                antique.highestBidder,
+                antique.tokenId
+            );
+        }
 
+        address royaltyReceiver;
+        uint256 royaltyAmount;
+        (royaltyReceiver, royaltyAmount) = anyNFT.royaltyInfo(
+            antique.tokenId,
+            antique.highestBid
+        );
+
+        if (royaltyReceiver != antique.owner) {
+            payable(royaltyReceiver).transfer(royaltyAmount);
+            payable(antique.owner).transfer(antique.highestBid - royaltyAmount);
+        } else {
+            payable(antique.owner).transfer(antique.highestBid);
+        }
+
+        pendingReturns[antique.highestBidder] = 0;
         antique.owner = antique.highestBidder;
 
         emit AuctionEnded(
@@ -262,15 +289,6 @@ contract AntiqueStore is AnyNFTMarket {
             antique.highestBidder,
             antique.highestBid
         );
-
-        if (toTransferNFT) {
-            AnyNFT anyNFT = AnyNFT(nftContract);
-            anyNFT.transferFrom(
-                msg.sender,
-                antique.highestBidder,
-                antique.tokenId
-            );
-        }
 
         return true;
     }
