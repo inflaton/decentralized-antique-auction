@@ -6,7 +6,7 @@
         <input type="text" class="form-control" v-model="newBid" />
       </div>
       <button @click="closeDialog(false)" class="btn">Cancel</button>
-      <button @click="closeDialog(newBid)" class="btn">OK</button>
+      <button @click="closeDialog(newBid)" class="btn">Confirm</button>
     </div>
   </div>
 </template>
