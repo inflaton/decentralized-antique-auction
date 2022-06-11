@@ -10,9 +10,11 @@
             <slot name="body">
               <h3>{{ antiqueData.name }}</h3>
               <h4>Starting Price: {{ antiqueData.price }}</h4>
-              <h4 v-if="
-                userData.isBidder || userData.address == antiqueData.owner
-              ">
+              <h4
+                v-if="
+                  userData.isBidder || userData.address == antiqueData.owner
+                "
+              >
                 {{ displayReserveOrBid() }}
               </h4>
               <h4>{{ displayHighestBid() }}</h4>
@@ -23,38 +25,61 @@
                 Owner: <small>{{ antiqueData.owner }}</small>
               </p>
 
-              <button v-if="canEndAuction()" class="btn btn-danger float-right" v-on:click="endAuction">
+              <button
+                v-if="canEndAuction()"
+                class="btn btn-danger float-right"
+                v-on:click="endAuction"
+              >
                 End Auction
               </button>
-              <button v-else-if="
-                userData.address == antiqueData.owner &&
-                antiqueData.highestBidWei == 0
-              " class="btn btn-danger float-right" v-on:click="deleteAntique">
+              <button
+                v-else-if="
+                  userData.address == antiqueData.owner &&
+                  antiqueData.highestBidWei == 0
+                "
+                class="btn btn-danger float-right"
+                v-on:click="deleteAntique"
+              >
                 Delete
               </button>
-              <button v-else-if="
-                antiqueData.available &&
-                userData.address != antiqueData.owner &&
-                ((!userData.isBidder &&
-                  antiqueData.highestBidder != userData.address) ||
-                  antiqueData.reservePriceWei < antiqueData.highestBidWei)
-              " v-on:click="bidAntique" class="btn btn-primary float-right">
+              <button
+                v-else-if="
+                  antiqueData.available &&
+                  userData.address != antiqueData.owner &&
+                  ((!userData.isBidder &&
+                    antiqueData.highestBidder != userData.address) ||
+                    antiqueData.reservePriceWei < antiqueData.highestBidWei)
+                "
+                v-on:click="bidAntique"
+                class="btn btn-primary float-right"
+              >
                 Place Bid
               </button>
-              <button v-else-if="
-                userData.address == antiqueData.owner &&
-                antiqueData.reservePriceWei == antiqueData.highestBidWei
-              " class="btn btn-danger float-right" v-on:click="resellAntique">
+              <button
+                v-else-if="
+                  userData.address == antiqueData.owner &&
+                  antiqueData.reservePriceWei == antiqueData.highestBidWei
+                "
+                class="btn btn-danger float-right"
+                v-on:click="resellAntique"
+              >
                 Resell Antique
               </button>
-              <button v-else-if="
-                userData.address != antiqueData.owner &&
-                antiqueData.auctionEnded
-              " class="btn btn-danger float-right" v-on:click="withdraw">
+              <button
+                v-else-if="
+                  userData.address != antiqueData.owner &&
+                  antiqueData.auctionEnded
+                "
+                class="btn btn-danger float-right"
+                v-on:click="withdraw"
+              >
                 Withdraw
               </button>
 
-              <button class="btn btn-outline-secondary float-right mr-3" v-on:click="userInteractionCompleted">
+              <button
+                class="btn btn-outline-secondary float-right mr-3"
+                v-on:click="userInteractionCompleted"
+              >
                 Cancel
               </button>
             </slot>
@@ -92,14 +117,16 @@ export default {
   },
   methods: {
     displayReserveOrBid() {
-      return `${this.userData.isBidder ? 'My Bid' : 'Reserve Price'}: ${this.antiqueData.reservePrice
-        }`
+      return `${this.userData.isBidder ? 'My Bid' : 'Reserve Price'}: ${
+        this.antiqueData.reservePrice
+      }`
     },
     displayHighestBid() {
-      return `Highest Bid: ${this.antiqueData.highestBid}${this.antiqueData.highestBidder == this.userData.address
-        ? ' (by me)'
-        : ''
-        }`
+      return `Highest Bid: ${this.antiqueData.highestBid}${
+        this.antiqueData.highestBidder == this.userData.address
+          ? ' (by me)'
+          : ''
+      }`
     },
     auctionEndState() {
       return this.antiqueData.auctionEnded
@@ -111,7 +138,7 @@ export default {
         !this.userData.isBidder &&
         this.userData.address == this.antiqueData.owner &&
         window.bc.weiToEther(this.antiqueData.highestBidWei) >=
-        window.bc.weiToEther(this.antiqueData.reservePriceWei)
+          window.bc.weiToEther(this.antiqueData.reservePriceWei)
       )
     },
     deleteAntique() {
@@ -144,7 +171,7 @@ export default {
       console.log(`bid: ${JSON.stringify(this.bid)} `)
       const currencySymbol = window.bc.getInfo('currencySymbol')
       openDialog(BidDialog, {
-        text: `Enter your bid(${currencySymbol}): `,
+        text: `Enter your bid (${currencySymbol}): `,
         bid: this.bid,
       }).then((result) => {
         console.log(`result: ${JSON.stringify(result)} `)
@@ -189,12 +216,11 @@ export default {
         antiqueId,
         method,
         value,
-        address
+        address,
       }
     },
   },
 }
 </script>
 
-<style>
-</style>
+<style></style>

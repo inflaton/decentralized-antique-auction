@@ -6,7 +6,7 @@
         <input type="text" class="form-control" v-model="newBid" />
       </div>
       <button @click="closeDialog(false)" class="btn">Cancel</button>
-      <button @click="closeDialog(newBid)" class="btn">Confirm</button>
+      <button @click="closeDialog(newBid)" class="btn">OK</button>
     </div>
   </div>
 </template>
@@ -24,11 +24,11 @@ export default defineComponent({
     function returnValue() {
       return true
     }
-    const newBid = props.bid;
+    const newBid = props.bid
     return {
       returnValue,
       closeDialog,
-      newBid
+      newBid,
     }
   },
 })
