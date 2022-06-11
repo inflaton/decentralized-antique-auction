@@ -6,7 +6,7 @@
         <input type="text" class="form-control" v-model="newBid" />
       </div>
       <button @click="closeDialog(false)" class="btn">Cancel</button>
-      <button @click="closeDialog(newBid)" class="btn">Confirm</button>
+      <button @click="closeDialog(newBid)" class="btn">OK</button>
     </div>
   </div>
 </template>
@@ -47,10 +47,10 @@ export default defineComponent({
 .center {
   position: fixed;
   top: 50%;
-  left: 20%;
+  left: 50%;
   transform: translate(-50%, -50%);
   background-color: white;
-  padding: 20px;
+  padding: 10px;
 }
 
 .btn {
