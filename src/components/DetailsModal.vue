@@ -46,8 +46,7 @@
                 v-else-if="
                   antiqueData.available &&
                   userData.address != antiqueData.owner &&
-                  ((!userData.isBidder &&
-                    antiqueData.highestBidder != userData.address) ||
+                  (!userData.isBidder ||
                     antiqueData.reservePriceWei < antiqueData.highestBidWei)
                 "
                 v-on:click="bidAntique"
