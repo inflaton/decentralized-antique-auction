@@ -3,9 +3,10 @@ let AntiqueStore = artifacts.require('./AntiqueStore.sol')
 
 contract('AntiqueNFT', function (accounts) {
   let instance = null // store the AntiqueStore contract instance
-  let mainAccount = accounts[0]
-  let bidder1 = accounts[1]
-  let bidder2 = accounts[2]
+  let contractOwner = accounts[0]
+  let mainAccount = accounts[1]
+  let bidder1 = accounts[2]
+  let bidder2 = accounts[3]
   let latestAntiqueId
   let resellingAntiqueId
   let nftInst
@@ -25,6 +26,15 @@ contract('AntiqueNFT', function (accounts) {
       .then(function (result) {
         // storing the current number on the let antiquesBefore
         assert.equal(result, nftInst.address, 'nftContract not properly set up')
+        return instance.contractOwner.call()
+      })
+      .then(function (_contractOwner) {
+        // console.log(`contractOwner: ${contractOwner}`)
+        assert.equal(
+          _contractOwner,
+          contractOwner,
+          'nftContract not properly set up',
+        )
       })
   })
 
@@ -49,8 +59,18 @@ contract('AntiqueNFT', function (accounts) {
           },
         )
       })
-      .then(function (_result) {
-        // console.log(`sellAntique result: ${JSON.stringify(_result, 0, 2)}`)
+      .then(function (txResult) {
+        // console.log(`sellAntique result: ${JSON.stringify(txResult, 0, 2)}`)
+        return nftInst.royaltyInfo(txResult.receipt.logs[0].args.tokenId, 10000)
+      })
+      .then(function (royaltyInfo) {
+        // console.log(`royaltyInfo: ${JSON.stringify(royaltyInfo)}`)
+        assert.equal(
+          web3.utils.toBN(royaltyInfo.royaltyAmount),
+          250,
+          'wrong royaltyAmount',
+        )
+        assert.equal(royaltyInfo.receiver, contractOwner, 'wrong receiver')
         return instance.getAntiques.call(false)
       })
       .then(function (result) {
@@ -144,10 +164,16 @@ contract('AntiqueNFT', function (accounts) {
       })
       .then(function (result) {
         // console.log(`endAuction: ${JSON.stringify(result, 0, 2)}`)
+
         assert.equal(
-          result.receipt.from.toLowerCase(),
-          mainAccount.toLowerCase(),
-          'endAuction failed',
+          result.receipt.logs[2].args.royaltyReceiver,
+          contractOwner,
+          'endAuction failed - should have correct royalty receiver',
+        )
+        assert.equal(
+          result.receipt.logs[2].args.royaltyAmount,
+          '125000000000000',
+          'endAuction failed - should have correct royalty amount',
         )
       })
   })
@@ -216,7 +242,7 @@ contract('AntiqueNFT', function (accounts) {
   })
 
   it('creator should receive royalty for reselling', async function () {
-    const balanceBefore = await web3.eth.getBalance(mainAccount)
+    const balanceBefore = await web3.eth.getBalance(contractOwner)
     // console.log(`balanceBefore: ${balanceBefore} ${typeof balanceBefore}`)
 
     let result = await instance.bidAntique(resellingAntiqueId, {
@@ -229,8 +255,9 @@ contract('AntiqueNFT', function (accounts) {
       from: bidder2,
     })
     assert.equal(result.receipt.status, true, 'endAuction failed')
+    // console.log(`endAuction result: ${JSON.stringify(result, 0, 2)}`)
 
-    const balanceAfter = await web3.eth.getBalance(mainAccount)
+    const balanceAfter = await web3.eth.getBalance(contractOwner)
     // console.log(`balanceAfter: ${balanceBefore} ${typeof balanceAfter}`)
 
     assert.equal(

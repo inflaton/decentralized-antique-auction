@@ -30,6 +30,8 @@ abstract contract AnyNFTMarket {
         returns (
             address,
             address,
+            uint256,
+            address,
             uint256
         );
 }

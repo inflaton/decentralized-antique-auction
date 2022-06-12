@@ -91,7 +91,7 @@ contract AntiqueStore is AnyNFTMarket {
         AnyNFT anyNFT = AnyNFT(nftContract);
         uint256 tokenId = anyNFT.mintNFTWithRoyalty(
             msg.sender,
-            msg.sender,
+            contractOwner,
             royaltyValue,
             tokenURI
         );
@@ -230,13 +230,16 @@ contract AntiqueStore is AnyNFTMarket {
         return result;
     }
 
-    function endAuction(uint256 _antiqueId) public returns (bool success) {
+    function endAuction(uint256 _antiqueId)
+        public
+        returns (address royaltyReceiver, uint256 royaltyAmount)
+    {
         return _endAuction(_antiqueId, true);
     }
 
     function _endAuction(uint256 _antiqueId, bool toTransferNFT)
         internal
-        returns (bool success)
+        returns (address royaltyReceiver, uint256 royaltyAmount)
     {
         Antique storage antique = antiques[_antiqueId];
         require(
@@ -267,14 +270,12 @@ contract AntiqueStore is AnyNFTMarket {
             );
         }
 
-        address royaltyReceiver;
-        uint256 royaltyAmount;
         (royaltyReceiver, royaltyAmount) = anyNFT.royaltyInfo(
             antique.tokenId,
             antique.highestBid
         );
 
-        if (royaltyReceiver != antique.owner) {
+        if (royaltyAmount != 0 && royaltyReceiver != antique.owner) {
             payable(royaltyReceiver).transfer(royaltyAmount);
             payable(antique.owner).transfer(antique.highestBid - royaltyAmount);
         } else {
@@ -287,10 +288,12 @@ contract AntiqueStore is AnyNFTMarket {
         emit AuctionEnded(
             _antiqueId,
             antique.highestBidder,
-            antique.highestBid
+            antique.highestBid,
+            royaltyReceiver,
+            royaltyAmount
         );
 
-        return true;
+        return (royaltyReceiver, royaltyAmount);
     }
 
     function endAntiqueAuction(uint256 _antiqueId)
@@ -299,15 +302,24 @@ contract AntiqueStore is AnyNFTMarket {
         returns (
             address,
             address,
+            uint256,
+            address,
             uint256
         )
     {
         Antique memory antique = antiques[_antiqueId];
+        address royaltyReceiver;
+        uint256 royaltyAmount;
+        (royaltyReceiver, royaltyAmount) = _endAuction(_antiqueId, false);
+
         address from = antique.owner;
-
-        _endAuction(_antiqueId, false);
-
-        return (from, antique.highestBidder, antique.tokenId);
+        return (
+            from,
+            antique.highestBidder,
+            antique.tokenId,
+            royaltyReceiver,
+            royaltyAmount
+        );
     }
 
     function withdraw(uint256 _antiqueId) public payable returns (bool) {
@@ -405,7 +417,9 @@ contract AntiqueStore is AnyNFTMarket {
     event AuctionEnded(
         uint256 indexed antiqueId,
         address indexed highestBidder,
-        uint256 indexed highestBid
+        uint256 indexed highestBid,
+        address royaltyReceiver,
+        uint256 royaltyAmount
     );
 
     event NewWithdrawal(

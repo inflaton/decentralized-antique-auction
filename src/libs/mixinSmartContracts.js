@@ -5,6 +5,7 @@ export default {
   data() {
     return {
       perf: {},
+      value: 0,
     }
   },
 
@@ -26,17 +27,17 @@ export default {
       this.perf.t1 = performance.now()
       console.log(
         method +
-        ' error: ' +
-        (!error ? error : error.message) +
-        ' txHash: ' +
-        txHash,
+          ' error: ' +
+          (!error ? error : error.message) +
+          ' txHash: ' +
+          txHash,
       )
       console.log(
         'Call to ' +
-        method +
-        ' took ' +
-        (this.perf.t1 - this.perf.t0) / 1000 +
-        ' seconds.',
+          method +
+          ' took ' +
+          (this.perf.t1 - this.perf.t0) / 1000 +
+          ' seconds.',
       )
       let txnInfo
       if (!error) {
@@ -73,11 +74,14 @@ export default {
       console.log(`${method} txReceipt: ${JSON.stringify(txReceipt)}`)
 
       console.log(
-        `${method} confirmation took ${(this.perf.t2 - this.perf.t1) / 1000
+        `${method} confirmation took ${
+          (this.perf.t2 - this.perf.t1) / 1000
         } seconds.`,
       )
       let transactionId = undefined
       let tokenId = undefined
+      let royaltyReceiver = undefined
+      let royaltyAmount = undefined
 
       antiqueId =
         antiqueId || txReceipt.events.NewAntique.returnValues.antiqueId
@@ -86,6 +90,12 @@ export default {
         tokenId = txReceipt.events.NewAntique.returnValues.tokenId
       } else if (txReceipt.events.Transfer) {
         tokenId = txReceipt.events.Transfer.returnValues.tokenId
+        if (txReceipt.events.RoyaltyPaid) {
+          royaltyReceiver =
+            txReceipt.events.RoyaltyPaid.returnValues.royaltyReceiver
+          royaltyAmount =
+            txReceipt.events.RoyaltyPaid.returnValues.royaltyAmount
+        }
       }
       if (txReceipt.events.NewBid) {
         transactionId = txReceipt.events.NewBid.returnValues.transactionId
@@ -101,11 +111,14 @@ export default {
         },
         txHash: txReceipt.transactionHash,
         perf: this.perf,
+        value: this.value,
         status: 'Confirmed',
         antiqueId,
         transactionId,
         tokenAddress,
         tokenId,
+        royaltyReceiver,
+        royaltyAmount,
       }
       // it emits a global event in order to update the top menu bar
       this.$Event.emit('transaction_event', txnInfo)
@@ -129,6 +142,7 @@ export default {
       if (contractInfo.value) {
         option.value = contractInfo.value
       }
+      this.value = contractInfo.bidValue
 
       console.log(`invokeSmartContract - option: ${JSON.stringify(option)}`)
 

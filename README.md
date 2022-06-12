@@ -1,6 +1,6 @@
 # Decentralized Antique Auction
 
-This sample dApp uses [Vue.js](https://vuejs.org/) for developing SPA as front-end and Truffle & Solidity for developing Smart Contract as backend.
+This sample dApp uses [Vue.js](https://vuejs.org/) for developing SPA as front-end and Truffle & Solidity for developing Smart Contracts as backend.
 
 Please refer to the following steps to deploy this DApp on EVM-compliant testnets and IPFS.
 
@@ -22,6 +22,7 @@ Set up environment variables in .env
 ```
 cp .env.example .env
 cat .env
+INFURA_API_KEY=
 METER_PRIVATE_KEY=
 ROPSTEN_PRIVATE_KEY=
 RINKEBY_PRIVATE_KEY=

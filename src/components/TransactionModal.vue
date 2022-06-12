@@ -11,8 +11,12 @@
               <h4>Method: {{ transactionData.contract.method }}</h4>
               <p>
                 Transaction Details:
-                <a :href="transactionUrl(transactionData.txHash)" target="_blank">
-                  {{ displayableTxHash(transactionData.txHash) }}</a>
+                <a
+                  :href="transactionUrl(transactionData.txHash)"
+                  target="_blank"
+                >
+                  {{ displayableTxHash(transactionData.txHash) }}</a
+                >
               </p>
               <p v-if="transactionData.status == 'Submitted'">
                 Transaction has been initiated. Waiting for confirmation ...
@@ -23,9 +27,16 @@
                 Confirmation:
                 {{ transactionData.confirmationDuration }} seconds<br />
               </p>
-              <h4 v-if="transactionData.tokenId">{{ transactionData.contract.method == 'endAuction' ? 'Transferred' :
-                  transactionData.contract.method == 'resellAntique' ? 'Listed' : 'Minted'
-              }} Antique NFT</h4>
+              <h4 v-if="transactionData.tokenId">
+                {{
+                  transactionData.contract.method == 'endAuction'
+                    ? 'Transferred'
+                    : transactionData.contract.method == 'resellAntique'
+                    ? 'Listed'
+                    : 'Minted'
+                }}
+                Antique NFT
+              </h4>
               <p v-if="transactionData.tokenId">
                 Contract Address:
                 <small>{{ transactionData.tokenAddress }}</small>
@@ -33,9 +44,18 @@
                 Token ID:
                 {{ transactionData.tokenId }} <br />
               </p>
-              <br />
+              <p v-if="transactionData.royaltyAmount">
+                Royalty Receiver:
+                <small>{{ transactionData.royaltyReceiver }}</small>
+                <br />
+                Royalty Amount:
+                {{ displayableRoyaltyAmount() }} <br />
+              </p>
 
-              <button class="btn btn-outline-secondary float-right mr-3" v-on:click="closeModal">
+              <button
+                class="btn btn-outline-secondary float-right mr-3"
+                v-on:click="closeModal"
+              >
                 Close
               </button>
             </slot>
@@ -56,6 +76,9 @@ export default {
     displayableTxHash(txHash) {
       return txHash.slice(0, 10) + '...' + txHash.slice(-6)
     },
+    displayableRoyaltyAmount() {
+      return `${window.bc.weiToEtherStr(this.transactionData.royaltyAmount)} `
+    },
     transactionUrl(txHash) {
       return window.bc.getTransactionUrl(txHash)
     },
@@ -63,5 +86,4 @@ export default {
 }
 </script>
 
-<style>
-</style>
+<style></style>

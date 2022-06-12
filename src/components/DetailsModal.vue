@@ -20,27 +20,35 @@
               <h4>{{ displayHighestBid() }}</h4>
 
               <p>
-                Description: {{ antiqueData.description }}<br />
+                Description: {{ antiqueData.bidEther }}<br />
                 {{ auctionEndState() }}<br />
                 Owner: <small>{{ antiqueData.owner }}</small>
               </p>
 
+              <div v-if="enteringBidValue" class="form-group">
+                <label for="bidEther"
+                  >Enter new bid ({{ currencySymbol }}):</label
+                >
+                <input
+                  type="text"
+                  class="form-control input-sm"
+                  v-model="bidEther"
+                />
+              </div>
+
               <button
-                v-if="canEndAuction()"
-                class="btn btn-danger float-right"
-                v-on:click="endAuction"
-              >
-                End Auction
-              </button>
-              <button
-                v-else-if="
-                  userData.address == antiqueData.owner &&
-                  antiqueData.highestBidWei == 0
-                "
-                class="btn btn-danger float-right"
+                v-if="canDeleteAntique()"
+                class="btn btn-danger float-right mr-3"
                 v-on:click="deleteAntique"
               >
                 Delete
+              </button>
+              <button
+                v-if="canEndAuction()"
+                class="btn btn-primary float-right mr-3"
+                v-on:click="endAuction"
+              >
+                End Auction
               </button>
               <button
                 v-else-if="
@@ -50,16 +58,16 @@
                     antiqueData.reservePriceWei < antiqueData.highestBidWei)
                 "
                 v-on:click="bidAntique"
-                class="btn btn-primary float-right"
+                class="btn btn-primary float-right mr-3"
               >
-                Place Bid
+                {{ enteringBidValue ? 'Confirm' : 'Place Bid' }}
               </button>
               <button
                 v-else-if="
                   userData.address == antiqueData.owner &&
                   antiqueData.reservePriceWei == antiqueData.highestBidWei
                 "
-                class="btn btn-danger float-right"
+                class="btn btn-primary float-right mr-3"
                 v-on:click="resellAntique"
               >
                 Resell Antique
@@ -69,7 +77,7 @@
                   userData.address != antiqueData.owner &&
                   antiqueData.auctionEnded
                 "
-                class="btn btn-danger float-right"
+                class="btn btn-danger float-right mr-3"
                 v-on:click="withdraw"
               >
                 Withdraw
@@ -94,8 +102,6 @@
 <script>
 import mixin from '../libs/mixinSmartContracts'
 import PulseLoader from 'vue-spinner/src/PulseLoader.vue'
-import { openDialog } from 'vue3-promise-dialog'
-import BidDialog from '../components/BidDialog.vue'
 
 export default {
   mixins: [mixin],
@@ -106,9 +112,11 @@ export default {
   data() {
     return {
       loading: false,
-      bid: 0,
+      bidEther: 0,
       timestamp: 0,
       tmoConn: null, // contain the intervalID given by setInterval
+      enteringBidValue: false,
+      currencySymbol: window.bc.getInfo('currencySymbol'),
     }
   },
   created() {
@@ -131,6 +139,13 @@ export default {
       return this.antiqueData.auctionEnded
         ? 'Auction Ended'
         : `Auction Ending at:${this.antiqueData.auctionEndTime.toLocaleString()}`
+    },
+    canDeleteAntique() {
+      return (
+        this.userData.address == this.antiqueData.owner &&
+        (this.antiqueData.highestBidWei == 0 ||
+          import.meta.env.VITE_DELETE_ANTIQUE_ON_SALE)
+      )
     },
     canEndAuction() {
       return (
@@ -160,34 +175,31 @@ export default {
       })
     },
     bidAntique() {
-      this.bid =
-        this.antiqueData.highestBidWei > 0
-          ? window.bc.weiToEther(this.antiqueData.highestBidWei).toString()
-          : window.bc.weiToEther(this.antiqueData.priceWei).toString()
-      if (this.antiqueData.highestBidWei > 0) {
-        this.bid = this.bid + (this.bid.includes('.') ? '1' : '.1')
-      }
-      console.log(`bid: ${JSON.stringify(this.bid)} `)
-      const currencySymbol = window.bc.getInfo('currencySymbol')
-      openDialog(BidDialog, {
-        text: `Enter your bid (${currencySymbol}): `,
-        bid: this.bid,
-      }).then((result) => {
-        console.log(`result: ${JSON.stringify(result)} `)
-        if (result != false) {
-          this.bid = window.bc.etherToWei(result)
-          this.invokeSmartContract(
-            'AntiqueStore',
-            'bidAntique',
-            this.getContractInfo,
-            (error, _txnInfo) => {
-              if (error) {
-                console.error(error)
-              }
-            },
-          )
+      if (!this.enteringBidValue) {
+        this.bidEther =
+          this.antiqueData.highestBidWei > 0
+            ? window.bc.weiToEther(this.antiqueData.highestBidWei).toString()
+            : window.bc.weiToEther(this.antiqueData.priceWei).toString()
+        if (this.antiqueData.highestBidWei > 0) {
+          this.bidEther =
+            this.bidEther + (this.bidEther.includes('.') ? '1' : '.1')
         }
-      })
+        console.log(`bidEther: ${JSON.stringify(this.bidEther)} `)
+        this.enteringBidValue = true
+      } else {
+        console.log(`bidEther: ${JSON.stringify(this.bidEther)} `)
+        this.bidValue = window.bc.etherToWei(this.bidEther)
+        this.invokeSmartContract(
+          'AntiqueStore',
+          'bidAntique',
+          this.getContractInfo,
+          (error, _txnInfo) => {
+            if (error) {
+              console.error(error)
+            }
+          },
+        )
+      }
     },
     getContractInfo(contractName, method) {
       const address = this.userData.address
@@ -196,7 +208,7 @@ export default {
 
       const antiqueStoreContract = window.bc.contract(contractName)
       let value = undefined
-
+      let bidValue = undefined
       if (
         method == 'deleteAntique' ||
         method == 'endAuction' ||
@@ -205,9 +217,9 @@ export default {
       ) {
         method = antiqueStoreContract.methods[method](antiqueId)
       } else {
-        value = this.bid
+        value = this.bidValue
+        bidValue = value
         console.log(`getContractInfo - value: ${value} `)
-        const currencySymbol = window.bc.getInfo('currencySymbol')
         method = antiqueStoreContract.methods[method](antiqueId)
       }
       return {
@@ -216,6 +228,7 @@ export default {
         method,
         value,
         address,
+        bidValue,
       }
     },
   },

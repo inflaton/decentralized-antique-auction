@@ -3,9 +3,10 @@ var AntiqueStore = artifacts.require('./AntiqueStore.sol')
 
 contract('AntiqueStore', function (accounts) {
   var instance = null // store the AntiqueStore contract instance
-  var mainAccount = accounts[0]
-  var bidder1 = accounts[1]
-  var bidder2 = accounts[2]
+  var contractOwner = accounts[0]
+  var mainAccount = accounts[1]
+  var bidder1 = accounts[2]
+  var bidder2 = accounts[3]
   var latestAntiqueId
   let resellingAntiqueId
   var nftInst
@@ -31,6 +32,15 @@ contract('AntiqueStore', function (accounts) {
       .then(function (result) {
         // storing the current number on the var antiquesBefore
         assert.equal(result, nftInst.address, 'nftContract not properly set up')
+        return instance.contractOwner.call()
+      })
+      .then(function (_contractOwner) {
+        // console.log(`contractOwner: ${contractOwner}`)
+        assert.equal(
+          _contractOwner,
+          contractOwner,
+          'nftContract not properly set up',
+        )
       })
   })
 
@@ -143,19 +153,25 @@ contract('AntiqueStore', function (accounts) {
       })
   })
 
-  it('should end an auction', function () {
-    return instance
-      .endAuction(latestAntiqueId, {
-        from: mainAccount,
-      })
-      .then(function (result) {
-        // console.log(`endAuction: ${JSON.stringify(result, 0, 2)}`)
-        assert.equal(
-          result.receipt.from.toLowerCase(),
-          mainAccount.toLowerCase(),
-          'endAuction failed',
-        )
-      })
+  it('should end an auction', async function () {
+    let result = await instance.endAuction(latestAntiqueId, {
+      from: mainAccount,
+    })
+    assert.equal(result.receipt.status, true, 'endAuction failed')
+    // console.log(`endAuction result: ${JSON.stringify(result, 0, 2)}`)
+
+    assert.equal(
+      result.receipt.logs[0].args.royaltyReceiver ||
+        result.receipt.logs[2].args.royaltyReceiver,
+      '0x0000000000000000000000000000000000000000',
+      'should have no royalty receiver',
+    )
+    assert.equal(
+      result.receipt.logs[0].args.royaltyAmount ||
+        result.receipt.logs[2].args.royaltyAmount,
+      '0',
+      'should have no royalty amount',
+    )
   })
 
   it('should retrieve my bids after winning', function () {

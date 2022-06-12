@@ -16,24 +16,12 @@
 
     <h2 v-show="isLoading && bcConnected">Loading...</h2>
     <div class="row" v-show="!isLoading">
-      <div
-        class="m-3"
-        v-for="(antique, i) in antiques"
-        v-bind:key="'antique' + antique.id + i"
-      >
-        <Card
-          :antiqueObject="antique"
-          :userObject="getUserObject()"
-          @resellAntique="resellAntique"
-        />
+      <div class="m-3" v-for="(antique, i) in antiques" v-bind:key="'antique' + antique.id + i">
+        <Card :antiqueObject="antique" :userObject="getUserObject()" @resellAntique="resellAntique" />
       </div>
     </div>
-    <antique-form
-      v-if="showModal"
-      :userData="getUserObject()"
-      :antiqueData="getAntiqueObject()"
-      @userInteractionCompleted="onUserInteractionCompleted"
-    />
+    <antique-form v-if="showModal" :userData="getUserObject()" :antiqueData="getAntiqueObject()"
+      @userInteractionCompleted="onUserInteractionCompleted" />
   </div>
 </template>
 
@@ -210,7 +198,9 @@ export default {
             // getting the antique one by one
             for (var i = 0; i < total; i++) {
               const antique = antiques[i]
-              callback(antique)
+              if (antique.forSale || antique.auctionEnded) {
+                callback(antique)
+              }
             } // end for
           }
         })
@@ -233,4 +223,5 @@ export default {
 }
 </script>
 
-<style></style>
+<style>
+</style>

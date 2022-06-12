@@ -68,13 +68,26 @@ contract AntiqueNFT is
         return tokenId;
     }
 
-    function endAuction(uint256 antiqueId) public returns (bool success) {
+    function endAuction(uint256 antiqueId) public returns (bool) {
         address from;
         address to;
         uint256 tokenId;
+        address royaltyReceiver;
+        uint256 royaltyAmount;
         AnyNFTMarket market = AnyNFTMarket(marketContract);
-        (from, to, tokenId) = market.endAntiqueAuction(antiqueId);
+        (from, to, tokenId, royaltyReceiver, royaltyAmount) = market
+            .endAntiqueAuction(antiqueId);
         transferFrom(msg.sender, to, tokenId);
+
+        if (royaltyAmount > 0) {
+            emit RoyaltyPaid(tokenId, royaltyReceiver, royaltyAmount);
+        }
         return true;
     }
+
+    event RoyaltyPaid(
+        uint256 indexed tokenId,
+        address indexed royaltyReceiver,
+        uint256 indexed royaltyAmount
+    );
 }

@@ -26,6 +26,7 @@
 // importing common function
 import mixin from '../libs/mixinViews'
 import TransactionModal from './TransactionModal.vue'
+import axios from 'axios'
 
 export default {
   mixins: [mixin],
@@ -57,6 +58,9 @@ export default {
       this.transactionObject.status = txnInfo.status
       this.transactionObject.tokenId = txnInfo.tokenId
       this.transactionObject.tokenAddress = txnInfo.tokenAddress
+      this.transactionObject.value = txnInfo.value
+      this.transactionObject.royaltyReceiver = txnInfo.royaltyReceiver
+      this.transactionObject.royaltyAmount = txnInfo.royaltyAmount
 
       if (txnInfo.status == 'Confirmed') {
         this.transactionObject.submissionDuration = this.round(
@@ -65,6 +69,7 @@ export default {
         this.transactionObject.confirmationDuration = this.round(
           (txnInfo.perf.t2 - txnInfo.perf.t1) / 1000,
         )
+
         this.showModal = false
         const This = this
         setTimeout(() => (This.showModalConfirmed = true), 50)
