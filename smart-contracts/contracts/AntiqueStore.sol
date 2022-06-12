@@ -2,11 +2,8 @@
 pragma solidity ^0.8.1;
 
 import './AnyNFT.sol';
-import './strings.sol';
 
 contract AntiqueStore is AnyNFTMarket {
-    using strings for *;
-
     struct Antique {
         uint256 id;
         uint256 tokenId;
