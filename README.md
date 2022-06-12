@@ -1,6 +1,8 @@
 # Decentralized Antique Auction
 
-This sample dApp uses [Vue.js](https://vuejs.org/) for developing SPA as front-end and Truffle & Solidity for developing Smart Contracts as backend.
+This sample dApp is the companion project of my blog 
+<a href="https://mirror.xyz/0x90f2036E332dfAD451ba9E9C82366F4ba79173d8/aNVjOguN1DyT4vzUQTd74131lAYSIGmxSZu3nR2ST9M" target="_blank">Web3 POC - Decentralized Antique Auction</a>
+. It uses [Vue.js](https://vuejs.org/) for developing SPA as front-end and Truffle & Solidity for developing Smart Contract as backend.
 
 Please refer to the following steps to deploy this DApp on EVM-compliant testnets and IPFS.
 
