@@ -157,13 +157,17 @@ export default {
     },
     deleteAntique() {
       this.invokeSmartContract(
-        'AntiqueStore',
+        'AntiqueMarketplace',
         'deleteAntique',
         this.getContractInfo,
       )
     },
     withdraw() {
-      this.invokeSmartContract('AntiqueStore', 'withdraw', this.getContractInfo)
+      this.invokeSmartContract(
+        'AntiqueMarketplace',
+        'withdraw',
+        this.getContractInfo,
+      )
     },
     endAuction() {
       this.invokeSmartContract('AntiqueNFT', 'endAuction', this.getContractInfo)
@@ -190,7 +194,7 @@ export default {
         console.log(`bidEther: ${JSON.stringify(this.bidEther)} `)
         this.bidValue = window.bc.etherToWei(this.bidEther)
         this.invokeSmartContract(
-          'AntiqueStore',
+          'AntiqueMarketplace',
           'bidAntique',
           this.getContractInfo,
           (error, _txnInfo) => {
@@ -206,7 +210,7 @@ export default {
       const antiqueId = this.antiqueData.id
       console.log(`getContractInfo - antiqueId: ${antiqueId} `)
 
-      const antiqueStoreContract = window.bc.contract(contractName)
+      const antiqueMarketplaceContract = window.bc.contract(contractName)
       let value = undefined
       let bidValue = undefined
       if (
@@ -215,15 +219,15 @@ export default {
         method == 'withdraw' ||
         method == 'resellAntique'
       ) {
-        method = antiqueStoreContract.methods[method](antiqueId)
+        method = antiqueMarketplaceContract.methods[method](antiqueId)
       } else {
         value = this.bidValue
         bidValue = value
         console.log(`getContractInfo - value: ${value} `)
-        method = antiqueStoreContract.methods[method](antiqueId)
+        method = antiqueMarketplaceContract.methods[method](antiqueId)
       }
       return {
-        contract: antiqueStoreContract,
+        contract: antiqueMarketplaceContract,
         antiqueId,
         method,
         value,

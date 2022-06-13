@@ -1,5 +1,5 @@
 import BcExplorer from './BcExplorer'
-import AntiqueStoreContract from '../assets/AntiqueStore.json'
+import AntiqueMarketplaceContract from '../assets/AntiqueMarketplace.json'
 import AntiqueNFTContract from '../assets/AntiqueNFT.json'
 
 export default {
@@ -32,11 +32,11 @@ export default {
       if (!window.bc) {
         window.bc = new BcExplorer()
 
-        // connecting to the blockchain and intializing the AntiqueStore smart contract
+        // connecting to the blockchain and intializing the AntiqueMarketplace smart contract
         window.bc
           .initWithContractJson(
             import.meta.env.VITE_PROVIDER_ADDRESS_URL,
-            AntiqueStoreContract,
+            AntiqueMarketplaceContract,
             this.getContractInfo,
           )
           .then((error1) => {
@@ -83,7 +83,7 @@ export default {
       const envKey =
         contractName == 'AntiqueNFT'
           ? 'VITE_ANTIQUE_NFT_CONTRACT_ADDRESS'
-          : 'VITE_ANTIQUE_STORE_CONTRACT_ADDRESS'
+          : 'VITE_ANTIQUE_MARKETPLACE_CONTRACT_ADDRESS'
       let contractAddr = import.meta.env[envKey + '_' + currencySymbol]
       if (!contractAddr || contractAddr == '') {
         const network = compiledContractJson.networks[this.bcInfo.networkId]

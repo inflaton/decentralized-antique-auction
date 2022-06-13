@@ -1,11 +1,11 @@
 var AntiqueNFT = artifacts.require('./AntiqueNFT.sol')
-var AntiqueStoreContract = artifacts.require('./AntiqueStore.sol')
+var AntiqueMarketplaceContract = artifacts.require('./AntiqueMarketplace.sol')
 
 module.exports = function (deployer) {
   // deployer.deploy(AntiqueNFT)
-  // deployer.deploy(AntiqueStoreContract)
+  // deployer.deploy(AntiqueMarketplaceContract)
 
-  deployer.deploy(AntiqueStoreContract).then(function () {
-    return deployer.deploy(AntiqueNFT, AntiqueStoreContract.address)
+  deployer.deploy(AntiqueMarketplaceContract).then(function () {
+    return deployer.deploy(AntiqueNFT, AntiqueMarketplaceContract.address)
   })
 }

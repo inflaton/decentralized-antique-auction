@@ -1,8 +1,8 @@
 let AntiqueNFT = artifacts.require('./AntiqueNFT.sol')
-let AntiqueStore = artifacts.require('./AntiqueStore.sol')
+let AntiqueMarketplace = artifacts.require('./AntiqueMarketplace.sol')
 
 contract('AntiqueNFT', function (accounts) {
-  let instance = null // store the AntiqueStore contract instance
+  let instance = null // store the AntiqueMarketplace contract instance
   let contractOwner = accounts[0]
   let mainAccount = accounts[1]
   let bidder1 = accounts[2]
@@ -13,7 +13,7 @@ contract('AntiqueNFT', function (accounts) {
 
   // console.log(`accounts: ${accounts}`)
   it('should properly init contracts', function () {
-    return AntiqueStore.deployed()
+    return AntiqueMarketplace.deployed()
       .then(function (contractInstance) {
         // storing the contract instance so it will be used later on
         instance = contractInstance
@@ -88,7 +88,7 @@ contract('AntiqueNFT', function (accounts) {
 
   it('antique details in the blockchain should be the same the one gave on sellAntique', function () {
     // NOTE: the contract instance has been instantiated before, so no need
-    // to do again: return AntiqueStore.deployed().then(function(contractInstance) { ...
+    // to do again: return AntiqueMarketplace.deployed().then(function(contractInstance) { ...
     // like before in last test case.
     return instance.antiques.call(latestAntiqueId).then(function (result) {
       // console.log(`result: ${JSON.stringify(result)}`)
@@ -266,4 +266,4 @@ contract('AntiqueNFT', function (accounts) {
       'endAuction failed',
     )
   })
-}) // end AntiqueStore contract
+}) // end AntiqueMarketplace contract

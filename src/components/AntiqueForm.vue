@@ -10,42 +10,102 @@
           <div class="modal-body">
             <div class="form-group">
               <label for="name">Antique Name</label>
-              <input v-if="this.antiqueData" type="text" class="form-control input-sm" v-model="name"
-                placeholder="Enter Antique Name" readonly />
-              <input v-else type="text" class="form-control input-sm" v-model="name" placeholder="Enter Antique Name" />
+              <input
+                v-if="this.antiqueData"
+                type="text"
+                class="form-control input-sm"
+                v-model="name"
+                placeholder="Enter Antique Name"
+                readonly
+              />
+              <input
+                v-else
+                type="text"
+                class="form-control input-sm"
+                v-model="name"
+                placeholder="Enter Antique Name"
+              />
             </div>
             <div class="form-group">
               <label for="description">Description</label>
-              <input v-if="this.antiqueData" type="text" class="form-control input-sm" v-model="description" readonly
-                placeholder="Description" />
-              <input v-else type="text" class="form-control input-sm" v-model="description" placeholder="Description" />
+              <input
+                v-if="this.antiqueData"
+                type="text"
+                class="form-control input-sm"
+                v-model="description"
+                readonly
+                placeholder="Description"
+              />
+              <input
+                v-else
+                type="text"
+                class="form-control input-sm"
+                v-model="description"
+                placeholder="Description"
+              />
             </div>
             <div class="form-group" v-if="!this.antiqueData">
               <label for="image">Image</label>
-              <input type="file" class="form-control input-sm" ref="doc" @change="onFileSelected()"
-                placeholder="Image" />
+              <input
+                type="file"
+                class="form-control input-sm"
+                ref="doc"
+                @change="onFileSelected()"
+                placeholder="Image"
+              />
             </div>
             <div class="form-group">
-              <label for="startingPrice">Starting/Reserve Price ({{ priceUnit }}) {{ !antiqueData ? '& Royalty (%)' :
-                ''}} </label>
+              <label for="startingPrice"
+                >Starting/Reserve Price ({{ priceUnit }})
+                {{ !antiqueData ? '& Royalty (%)' : '' }}
+              </label>
               <div class="input-group">
-                <input type="text" class="form-control input-sm" v-model="startingPrice" placeholder="Starting" />
+                <input
+                  type="text"
+                  class="form-control input-sm"
+                  v-model="startingPrice"
+                  placeholder="Starting"
+                />
                 <span class="input-group-btn" style="width: 0px"></span>
-                <input type="text" class="form-control input-sm" v-model="reservePrice" placeholder="Reserve"
-                  style="margin-left: -1px" />
-                <span v-if="!this.antiqueData" class="input-group-btn" style="width: 0px"></span>
-                <input v-if="!this.antiqueData" type="text" class="form-control input-sm" v-model="royalty"
-                  placeholder="Royalty" style="margin-left: -1px" />
+                <input
+                  type="text"
+                  class="form-control input-sm"
+                  v-model="reservePrice"
+                  placeholder="Reserve"
+                  style="margin-left: -1px"
+                />
+                <span
+                  v-if="!this.antiqueData"
+                  class="input-group-btn"
+                  style="width: 0px"
+                ></span>
+                <input
+                  v-if="!this.antiqueData"
+                  type="text"
+                  class="form-control input-sm"
+                  v-model="royalty"
+                  placeholder="Royalty"
+                  style="margin-left: -1px"
+                />
               </div>
             </div>
             <div class="form-group">
               <label for="listingEndDate">Auction End Date/Time</label>
-              <Datepicker class="form-control input-sm" v-model="listingEndDate" />
+              <Datepicker
+                class="form-control input-sm"
+                v-model="listingEndDate"
+              />
             </div>
-            <button v-on:click="sellAntique" class="btn btn-primary float-right">
+            <button
+              v-on:click="sellAntique"
+              class="btn btn-primary float-right"
+            >
               Submit
             </button>
-            <button class="btn btn-outline-secondary float-right mr-3" v-on:click="userInteractionCompleted">
+            <button
+              class="btn btn-outline-secondary float-right mr-3"
+              v-on:click="userInteractionCompleted"
+            >
               Cancel
             </button>
             <pulse-loader :loading="loading"></pulse-loader>
@@ -89,21 +149,22 @@ export default {
   methods: {
     getContractInfo(contractName, method) {
       const address = this.userData.address
-      const antiqueStoreContract = window.bc.contract(contractName)
-      method = this.antiqueData ?
-        antiqueStoreContract.methods[method](
-          this.antiqueData.id,
-          window.bc.etherToWei(this.startingPrice),
-          window.bc.etherToWei(this.reservePrice),
-          Math.round(this.listingEndDate.getTime() / 1000))
-        :
-        antiqueStoreContract.methods[method](
-          this.tokenMetaDataURI,
-          window.bc.etherToWei(this.startingPrice),
-          window.bc.etherToWei(this.reservePrice),
-          Math.round(parseFloat(this.royalty) * 100), // to basis point
-          Math.round(this.listingEndDate.getTime() / 1000))
-      return { contract: antiqueStoreContract, method, address }
+      const antiqueMarketplaceContract = window.bc.contract(contractName)
+      method = this.antiqueData
+        ? antiqueMarketplaceContract.methods[method](
+            this.antiqueData.id,
+            window.bc.etherToWei(this.startingPrice),
+            window.bc.etherToWei(this.reservePrice),
+            Math.round(this.listingEndDate.getTime() / 1000),
+          )
+        : antiqueMarketplaceContract.methods[method](
+            this.tokenMetaDataURI,
+            window.bc.etherToWei(this.startingPrice),
+            window.bc.etherToWei(this.reservePrice),
+            Math.round(parseFloat(this.royalty) * 100), // to basis point
+            Math.round(this.listingEndDate.getTime() / 1000),
+          )
+      return { contract: antiqueMarketplaceContract, method, address }
     },
     onFileSelected() {
       this.file = this.$refs.doc.files[0]
@@ -154,7 +215,7 @@ export default {
         this.loading = false
         this.tokenMetaDataURI = tokenMetaDataURI
         this.invokeSmartContract(
-          'AntiqueStore',
+          'AntiqueMarketplace',
           this.antiqueData ? 'resellAntique' : 'sellAntique',
           this.getContractInfo,
           (error, _txnInfo) => {
@@ -169,5 +230,4 @@ export default {
 }
 </script>
 
-<style>
-</style>
+<style></style>

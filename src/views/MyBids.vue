@@ -16,12 +16,24 @@
 
     <h2 v-show="isLoading && bcConnected">Loading...</h2>
     <div class="row" v-show="!isLoading">
-      <div class="m-3" v-for="(antique, i) in antiques" v-bind:key="'antique' + antique.id + i">
-        <Card :antiqueObject="antique" :userObject="getUserObject()" @resellAntique="resellAntique" />
+      <div
+        class="m-3"
+        v-for="(antique, i) in antiques"
+        v-bind:key="'antique' + antique.id + i"
+      >
+        <Card
+          :antiqueObject="antique"
+          :userObject="getUserObject()"
+          @resellAntique="resellAntique"
+        />
       </div>
     </div>
-    <antique-form v-if="showModal" :userData="getUserObject()" :antiqueData="getAntiqueObject()"
-      @userInteractionCompleted="onUserInteractionCompleted" />
+    <antique-form
+      v-if="showModal"
+      :userData="getUserObject()"
+      :antiqueData="getAntiqueObject()"
+      @userInteractionCompleted="onUserInteractionCompleted"
+    />
   </div>
 </template>
 
@@ -180,10 +192,11 @@ export default {
      * Get all my bids.
      */
     getMyBids(callback) {
-      const antiquestoreContract = window.bc.contract('AntiqueStore')
+      const antiqueMarketplaceContract =
+        window.bc.contract('AntiqueMarketplace')
       // getting the total number of antiques stored in the blockchain
       // calling the method getAntiques from the smart contract
-      antiquestoreContract.methods
+      antiqueMarketplaceContract.methods
         .getMyBids()
         .call({
           from: this.address,
@@ -223,5 +236,4 @@ export default {
 }
 </script>
 
-<style>
-</style>
+<style></style>

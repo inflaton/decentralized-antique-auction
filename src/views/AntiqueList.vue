@@ -182,8 +182,9 @@ export default {
     },
 
     getAntique(id, callback) {
-      const antiquestoreContract = window.bc.contract('AntiqueStore')
-      antiquestoreContract.methods
+      const antiqueMarketplaceContract =
+        window.bc.contract('AntiqueMarketplace')
+      antiqueMarketplaceContract.methods
         .antiques(id)
         .call()
         .then((antique) => {
@@ -203,10 +204,11 @@ export default {
      * Get all antiques.
      */
     getAllAntiques(callback) {
-      const antiquestoreContract = window.bc.contract('AntiqueStore')
+      const antiqueMarketplaceContract =
+        window.bc.contract('AntiqueMarketplace')
       // getting the total number of antiques stored in the blockchain
       // calling the method getAntiques from the smart contract
-      antiquestoreContract.methods
+      antiqueMarketplaceContract.methods
         .getAntiques(true)
         .call()
         .then(async (antiques) => {

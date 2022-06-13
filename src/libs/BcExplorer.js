@@ -466,13 +466,13 @@ class BcExplorer {
   }
 
   /**
-   * Return the string "AntiqueStore" if the contract name is empty.
+   * Return the string "AntiqueMarketplace" if the contract name is empty.
    *
    * @return {string} name
    * @return {string}
    */
   contractDefaultName(name) {
-    return name || 'AntiqueStore'
+    return name || 'AntiqueMarketplace'
   }
 
   getTransactionUrl(txHash) {
