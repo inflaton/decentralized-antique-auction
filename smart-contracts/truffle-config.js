@@ -18,7 +18,7 @@
  *
  */
 
-const PrivateKeyProvider = require('@truffle/hdwallet-provider')
+const HDWalletProvider = require('@truffle/hdwallet-provider')
 const dotEnv = require('dotenv-flow')
 dotEnv.config()
 
@@ -47,7 +47,7 @@ module.exports = {
 
     meter: {
       provider: () => {
-        return new PrivateKeyProvider(
+        return new HDWalletProvider(
           process.env.METER_PRIVATE_KEY,
           'https://rpctest.meter.io',
         )
@@ -57,7 +57,7 @@ module.exports = {
 
     ropsten: {
       provider: () => {
-        return new PrivateKeyProvider(
+        return new HDWalletProvider(
           process.env.ROPSTEN_PRIVATE_KEY,
           `wss://ropsten.infura.io/ws/v3/${process.env.INFURA_API_KEY}`,
         )
@@ -72,7 +72,7 @@ module.exports = {
 
     rinkeby: {
       provider: () => {
-        return new PrivateKeyProvider(
+        return new HDWalletProvider(
           process.env.RINKEBY_PRIVATE_KEY,
           `wss://rinkeby.infura.io/ws/v3/${process.env.INFURA_API_KEY}`,
         )
@@ -87,7 +87,7 @@ module.exports = {
 
     rinkarby: {
       provider: () => {
-        return new PrivateKeyProvider(
+        return new HDWalletProvider(
           process.env.RINKARBY_PRIVATE_KEY,
           `wss://arbitrum-rinkeby.infura.io/ws/v3/${process.env.INFURA_API_KEY}`,
         )
@@ -101,7 +101,7 @@ module.exports = {
 
     kovan: {
       provider: () => {
-        return new PrivateKeyProvider(
+        return new HDWalletProvider(
           process.env.KOVAN_PRIVATE_KEY,
           `wss://kovan.infura.io/ws/v3/${process.env.INFURA_API_KEY}`,
         )
@@ -115,7 +115,7 @@ module.exports = {
 
     goerli: {
       provider: () => {
-        return new PrivateKeyProvider(
+        return new HDWalletProvider(
           process.env.GOERLI_PRIVATE_KEY,
           `wss://goerli.infura.io/ws/v3/${process.env.INFURA_API_KEY}`,
         )
@@ -129,7 +129,7 @@ module.exports = {
 
     optimism: {
       provider: () => {
-        return new PrivateKeyProvider(
+        return new HDWalletProvider(
           process.env.OPTIMISM_KOVAN_PRIVATE_KEY,
           `https://optimism-kovan.infura.io/v3/${process.env.INFURA_API_KEY}`,
           // 'https://kovan.optimism.io/',
@@ -144,7 +144,7 @@ module.exports = {
 
     polygon: {
       provider: () => {
-        return new PrivateKeyProvider(
+        return new HDWalletProvider(
           process.env.POLYGON_PRIVATE_KEY,
           `https://polygon-mumbai.infura.io/v3/${process.env.INFURA_API_KEY}`,
           // "https://matic-mumbai.chainstacklabs.com"
@@ -156,6 +156,20 @@ module.exports = {
       network_id: 80001,
       gas: 8000000, // Gas sent with each transaction (default: ~6700000)
       // gasPrice: 20000000000,// 20 gwei (in wei) (default: 100 gwei)
+      timeoutBlocks: 200, // # of blocks before a deployment times out  (minimum/default: 50)
+      skipDryRun: true, // Skip dry run before migrations? (default: false for public nets)
+    },
+
+    hedera: {
+      network_id: process.env.HEDERA_NETWORK_ID,
+      provider: () =>
+        new HDWalletProvider(
+          process.env.HEDERA_PRIVATE_KEY,
+          process.env.HEDERA_JSON_RPC_RELAY_URL,
+        ),
+      gas: 8000000, // gaslimit
+      gasPrice: 2000000000000, // set gas price to 2000 gwei
+      networkCheckTimeout: 1000000,
       timeoutBlocks: 200, // # of blocks before a deployment times out  (minimum/default: 50)
       skipDryRun: true, // Skip dry run before migrations? (default: false for public nets)
     },

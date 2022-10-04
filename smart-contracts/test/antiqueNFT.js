@@ -53,7 +53,7 @@ contract('AntiqueNFT', function (accounts) {
           2000000000000000,
           5000000000000000,
           250, // royalty = 2.5%
-          1663991618,
+          2663991618,
           {
             from: mainAccount,
           },
@@ -99,7 +99,7 @@ contract('AntiqueNFT', function (accounts) {
       assert.equal(result.reservePrice, 5000000000000000)
       assert.equal(result.owner, mainAccount) // owner
       assert.equal(result.forSale, true)
-      assert.equal(result.auctionEndTime, 1663991618)
+      assert.equal(result.auctionEndTime, 2663991618)
     })
   }) // end testing username and email
 

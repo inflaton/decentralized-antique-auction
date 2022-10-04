@@ -59,7 +59,7 @@ contract('AntiqueMarketplace', function (accounts) {
           2000000000000000,
           5000000000000000,
           0,
-          1663991618,
+          2663991618,
           {
             from: mainAccount,
           },
@@ -95,7 +95,7 @@ contract('AntiqueMarketplace', function (accounts) {
       assert.equal(result.reservePrice, 5000000000000000)
       assert.equal(result.owner, mainAccount) // owner
       assert.equal(result.forSale, true)
-      assert.equal(result.auctionEndTime, 1663991618)
+      assert.equal(result.auctionEndTime, 2663991618)
     })
   }) // end testing username and email
 
@@ -162,13 +162,13 @@ contract('AntiqueMarketplace', function (accounts) {
 
     assert.equal(
       result.receipt.logs[0].args.royaltyReceiver ||
-        result.receipt.logs[2].args.royaltyReceiver,
+      result.receipt.logs[2].args.royaltyReceiver,
       '0x0000000000000000000000000000000000000000',
       'should have no royalty receiver',
     )
     assert.equal(
       result.receipt.logs[0].args.royaltyAmount ||
-        result.receipt.logs[2].args.royaltyAmount,
+      result.receipt.logs[2].args.royaltyAmount,
       '0',
       'should have no royalty amount',
     )

@@ -10,7 +10,6 @@
     "deploy": "truffle migrate --reset",
     "sync": "./scripts/sync-contracts.sh",
     "deploy:all": "./scripts/deploy-contracts.sh",
-    "deploy:besu": "truffle migrate --reset --network besu",
     "deploy:meter": "truffle migrate --reset --network meter",
     "deploy:ropsten": "truffle migrate --reset --network ropsten",
     "deploy:rinkeby": "truffle migrate --reset --network rinkeby",
@@ -18,7 +17,8 @@
     "deploy:polygon": "truffle migrate --reset --network polygon",
     "deploy:kovan": "truffle migrate --reset --network kovan",
     "deploy:goerli": "truffle migrate --reset --network goerli",
-    "deploy:optimism": "truffle migrate --reset --network optimism"
+    "deploy:optimism": "truffle migrate --reset --network optimism",
+    "deploy:hedera": "truffle migrate --reset --network hedera"
   },
   "engines": {
     "node": ">= 12.0.0"
@@ -26,6 +26,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "@hashgraph/sdk": "^2.18.3",
     "@openzeppelin/contracts": "^4.5.0",
     "@truffle/hdwallet-provider": "^2.0.0",
     "bip39": "^3.0.2",
