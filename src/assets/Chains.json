@@ -4151,6 +4151,29 @@
     ]
   },
   {
+    "name": "Hedera Testnet",
+    "chain": "HBAR",
+    "rpc": [],
+    "faucets": [],
+    "nativeCurrency": {
+      "name": "HBAR",
+      "symbol": "HBAR",
+      "decimals": 18
+    },
+    "infoURL": "https://testnet.hashio.io/api",
+    "shortName": "hedera-testnet",
+    "chainId": 296,
+    "networkId": 296,
+    "deprecated": true,
+    "explorers": [
+      {
+        "name": "explorer",
+        "url": "http://localhost:25000/explorer/explorer/#/",
+        "standard": "EIP3091"
+      }
+    ]
+  },
+  {
     "name": "Catecoin Chain Mainnet",
     "chain": "Catechain",
     "rpc": ["https://send.catechain.com"],
