@@ -1,5 +1,6 @@
 import Web3 from 'web3'
 import Chains from '../assets/Chains.json'
+import { web3Provider } from '../walletConnect/provider'
 
 class BcExplorer {
   constructor() {
@@ -32,13 +33,13 @@ class BcExplorer {
         resolve(this.web3inst)
       }
       // checking if the provider is already set by mist or metamask
-      else if (window.web3Provider || window.ethereum) {
-        const web3Provider = window.web3Provider || window.ethereum
-        const web3 = new Web3(web3Provider)
+      else if (web3Provider() || window.ethereum) {
+        const web3ProviderInst = web3Provider() || window.ethereum
+        const web3 = new Web3(web3ProviderInst)
 
         try {
           // Request account access if needed
-          web3Provider
+          web3ProviderInst
             .request({ method: 'eth_requestAccounts' })
             .then((accounts) => {
               console.log(
@@ -46,13 +47,13 @@ class BcExplorer {
               )
 
               // detect Metamask account change
-              web3Provider.on('accountsChanged', function (accounts) {
+              web3ProviderInst.on('accountsChanged', function (accounts) {
                 console.log('accountsChanges', accounts)
                 window.location.reload()
               })
 
               // detect Network account change
-              web3Provider.on('chainChanged', function (chainId) {
+              web3ProviderInst.on('chainChanged', function (chainId) {
                 console.log('chainChanged', chainId)
                 window.location.reload()
               })

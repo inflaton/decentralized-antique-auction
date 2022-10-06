@@ -10,3 +10,12 @@ export const provider = (forceRecreate = true) => {
   }
   return providerInst
 }
+
+let web3ProviderInst = undefined
+
+export const web3Provider = (newProvider = undefined) => {
+  if (!newProvider) {
+    web3ProviderInst = newProvider
+  }
+  return web3ProviderInst
+}
