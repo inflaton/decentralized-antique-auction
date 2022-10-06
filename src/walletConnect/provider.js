@@ -10,15 +10,3 @@ export const provider = (forceRecreate = true) => {
   }
   return providerInst
 }
-
-export const web3Provider = (newProvider = undefined) => {
-  console.log('newProvider', newProvider)
-  if (newProvider == null) {
-    localStorage.removeItem('web3ProviderInst')
-  } else if (newProvider) {
-    localStorage.setItem('web3ProviderInst', true)
-  }
-  let web3ProviderInst = localStorage.getItem('web3ProviderInst')
-  console.log('web3ProviderInst', web3ProviderInst)
-  return web3ProviderInst ? provider() : null
-}

@@ -1,5 +1,12 @@
 import connect from './index'
-import { provider, web3Provider } from '../../walletConnect/provider'
+import { provider } from '../../walletConnect/provider'
+
+export const web3Provider = () => {
+  const { state } = connect()
+  const web3ProviderInst = state.state ? provider() : null
+  console.log('web3ProviderInst', web3ProviderInst)
+  return web3ProviderInst
+}
 
 const connectWalletConnect = async () => {
   try {
@@ -21,7 +28,6 @@ const connectWalletConnect = async () => {
       state.address = ''
       localStorage.removeItem('userState')
 
-      web3Provider(null)
       window.location.reload()
     })
 
@@ -37,7 +43,6 @@ const connectWalletConnect = async () => {
       console.log('chainId', state.chainId)
     })
 
-    web3Provider(wcProvider)
     // window.location.reload()
   } catch (error) {
     provider(true)

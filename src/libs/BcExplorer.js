@@ -1,6 +1,6 @@
 import Web3 from 'web3'
 import Chains from '../assets/Chains.json'
-import { web3Provider } from '../walletConnect/provider'
+import { web3Provider } from '../composables/connect/connectWalletConnect'
 
 class BcExplorer {
   constructor() {
