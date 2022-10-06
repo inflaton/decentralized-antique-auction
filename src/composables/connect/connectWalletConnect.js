@@ -4,10 +4,10 @@ import Web3 from 'web3'
 
 export const web3Provider = () => {
   const { state } = connect()
-  console.log('state', JSON.stringify(state))
+  // console.log('state', JSON.stringify(state))
 
   const web3ProviderInst = state && state.status ? provider() : null
-  console.log('web3ProviderInst', web3ProviderInst)
+  // console.log('web3ProviderInst', web3ProviderInst)
   if (web3ProviderInst) {
     web3ProviderInst.enable()
   }
