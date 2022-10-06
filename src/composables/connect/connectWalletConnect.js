@@ -12,26 +12,31 @@ const connectWalletConnect = async () => {
     console.log('after enable')
 
     state.status = true
-    state.address = address
+    state.address = ''
     state.chainId = await wcProvider.request({ method: 'eth_chainId' })
-    console.log(state.chainId)
+    console.log('chainId', state.chainId)
+
     wcProvider.on('disconnect', (code, reason) => {
       console.log(code, reason)
       console.log('disconnected')
       state.status = false
       state.address = ''
       localStorage.removeItem('userState')
+
+      window.web3Provider = undefined
+      window.location.reload()
     })
 
     wcProvider.on('accountsChanged', (accounts) => {
       if (accounts.length > 0) {
         state.address = accounts[0]
+        console.log('address', state.address)
       }
     })
 
     wcProvider.on('chainChanged', (chainId) => {
-      console.log(chainId)
       state.chainId = chainId
+      console.log('chainId', state.chainId)
     })
 
     window.web3Provider = wcProvider
