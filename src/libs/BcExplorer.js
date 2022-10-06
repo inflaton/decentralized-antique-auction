@@ -32,12 +32,13 @@ class BcExplorer {
         resolve(this.web3inst)
       }
       // checking if the provider is already set by mist or metamask
-      else if (window.ethereum) {
-        const web3 = new Web3(ethereum)
+      else if (window.web3Provider || window.ethereum) {
+        const web3Provider = window.web3Provider || window.ethereum
+        const web3 = new Web3(web3Provider)
 
         try {
           // Request account access if needed
-          ethereum
+          web3Provider
             .request({ method: 'eth_requestAccounts' })
             .then((accounts) => {
               console.log(
@@ -45,13 +46,13 @@ class BcExplorer {
               )
 
               // detect Metamask account change
-              window.ethereum.on('accountsChanged', function (accounts) {
+              web3Provider.on('accountsChanged', function (accounts) {
                 console.log('accountsChanges', accounts)
                 window.location.reload()
               })
 
               // detect Network account change
-              window.ethereum.on('chainChanged', function (chainId) {
+              web3Provider.on('chainChanged', function (chainId) {
                 console.log('chainChanged', chainId)
                 window.location.reload()
               })

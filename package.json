@@ -32,7 +32,7 @@
     "@pinata/sdk": "^1.1.25",
     "@vitejs/plugin-vue": "^2.3.3",
     "@vuepic/vue-datepicker": "^3.2.1",
-    "@walletconnect/web3-provider": "^1.7.8",
+    "@walletconnect/web3-provider": "^1.8.0",
     "axios": "^0.27.2",
     "body-parser": "^1.20.0",
     "cors": "^2.8.5",
