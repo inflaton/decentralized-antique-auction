@@ -3,6 +3,8 @@ import { provider } from '../../walletConnect/provider'
 
 export const web3Provider = () => {
   const { state } = connect()
+  console.log('state', JSON.stringify(state))
+
   const web3ProviderInst = state.state ? provider() : null
   console.log('web3ProviderInst', web3ProviderInst)
   return web3ProviderInst
