@@ -23,7 +23,7 @@ const connectWalletConnect = async () => {
       state.address = ''
       localStorage.removeItem('userState')
 
-      web3Provider(undefined)
+      web3Provider(null)
       window.location.reload()
     })
 

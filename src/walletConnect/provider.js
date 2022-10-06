@@ -14,8 +14,9 @@ export const provider = (forceRecreate = true) => {
 let web3ProviderInst = undefined
 
 export const web3Provider = (newProvider = undefined) => {
-  if (!newProvider) {
+  if (newProvider != undefined) {
     web3ProviderInst = newProvider
   }
+  console.log('web3ProviderInst', web3ProviderInst)
   return web3ProviderInst
 }
