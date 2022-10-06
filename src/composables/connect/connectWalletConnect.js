@@ -1,5 +1,4 @@
 import connect from './index'
-import WalletConnectProvider from '@walletconnect/web3-provider'
 import { provider } from '../../walletConnect/provider'
 
 const connectWalletConnect = async () => {
