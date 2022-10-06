@@ -7,6 +7,9 @@ export const web3Provider = () => {
 
   const web3ProviderInst = state && state.status ? provider() : null
   console.log('web3ProviderInst', web3ProviderInst)
+  if (web3ProviderInst) {
+    web3ProviderInst.enable()
+  }
   return web3ProviderInst
 }
 
@@ -45,7 +48,7 @@ const connectWalletConnect = async () => {
       console.log('chainId', state.chainId)
     })
 
-    // window.location.reload()
+    window.location.reload()
   } catch (error) {
     provider(true)
     console.log(error)
