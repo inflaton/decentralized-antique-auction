@@ -5,7 +5,7 @@ export const web3Provider = () => {
   const { state } = connect()
   console.log('state', JSON.stringify(state))
 
-  const web3ProviderInst = state.state ? provider() : null
+  const web3ProviderInst = state && state.status ? provider() : null
   console.log('web3ProviderInst', web3ProviderInst)
   return web3ProviderInst
 }
