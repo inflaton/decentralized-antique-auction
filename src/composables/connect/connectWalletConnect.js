@@ -3,13 +3,11 @@ import { provider, web3Provider } from '../../walletConnect/provider'
 
 const connectWalletConnect = async () => {
   try {
-    console.log('connect')
     const { state } = connect()
 
     //  Enable session (triggers QR Code modal)
     let wcProvider = provider()
     await wcProvider.enable()
-    console.log('after enable')
 
     state.status = true
     state.address = ''
