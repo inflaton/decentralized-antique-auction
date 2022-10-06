@@ -4,8 +4,13 @@ let providerInst = undefined
 
 export const provider = (forceRecreate = true) => {
   if (forceRecreate || !providerInst) {
+    const infuraId = import.meta.env['VITE_INFURA_ID']
     providerInst = new WalletConnectProvider({
-      infuraId: import.meta.env['VITE_INFURA_ID'],
+      infuraId,
+      rpc: {
+        5: `wss://goerli.infura.io/ws/v3/${infuraId}`, // goerli
+        80001: `https://polygon-mumbai.infura.io/v3/${infuraId}`, // mumbai
+      },
     })
   }
   return providerInst
