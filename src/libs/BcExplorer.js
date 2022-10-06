@@ -39,11 +39,13 @@ class BcExplorer {
 
         try {
           // Request account access if needed
-          web3ProviderInst
-            .request({ method: 'eth_requestAccounts' })
+          web3.eth
+            .getAccounts()
             .then((accounts) => {
               console.log(
-                `eth_requestAccounts - accounts: ${JSON.stringify(accounts)}`,
+                `web3.eth.getAccounts() - accounts: ${JSON.stringify(
+                  accounts,
+                )}`,
               )
 
               // detect Metamask account change

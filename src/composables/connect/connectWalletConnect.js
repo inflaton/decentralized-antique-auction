@@ -1,5 +1,6 @@
 import connect from './index'
 import { provider } from '../../walletConnect/provider'
+import Web3 from 'web3'
 
 export const web3Provider = () => {
   const { state } = connect()
@@ -22,8 +23,9 @@ const connectWalletConnect = async () => {
     await wcProvider.enable()
 
     state.status = true
-    state.address = ''
-    state.chainId = await wcProvider.request({ method: 'eth_chainId' })
+    const web3 = new Web3(wcProvider)
+    state.address = await web3.eth.getAccounts()[0]
+    state.chainId = await web3.eth.getChainId()
     console.log('chainId', state.chainId)
 
     wcProvider.on('disconnect', (code, reason) => {
