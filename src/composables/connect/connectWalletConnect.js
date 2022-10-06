@@ -38,7 +38,7 @@ const connectWalletConnect = async () => {
     })
 
     web3Provider(wcProvider)
-    window.location.reload()
+    // window.location.reload()
   } catch (error) {
     provider(true)
     console.log(error)
