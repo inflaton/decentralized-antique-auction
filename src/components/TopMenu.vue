@@ -8,7 +8,7 @@
           }}
         </strong>
       </li>
-      <li class="nav-link" v-on:click="reconnectUser">
+      <li v-if="bcConnected" class="nav-link" v-on:click="reconnectUser">
         {{
         getAddress()
         }}
