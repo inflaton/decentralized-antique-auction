@@ -18,6 +18,7 @@ class BcExplorer {
       addressUrl: null,
       currencySymbol: 'ETH',
       chainInfo: null,
+      walletConnect: false,
     }
   }
 
@@ -93,6 +94,7 @@ class BcExplorer {
    */
   async setWeb3(web3js, addressUrl) {
     this.info.addressUrl = addressUrl
+    this.info.walletConnect = web3Provider() != null
     this.web3inst = web3js
     await this.loadInfo()
 

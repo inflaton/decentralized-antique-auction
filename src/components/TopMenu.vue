@@ -4,29 +4,27 @@
       <li class="nav-link">
         <strong :class="connectedClass">
           {{
-            bcConnected ? `Connected to ${this.networkName}` : 'Not Connected'
+          bcConnected ? `Connected to ${this.networkName}` : 'Not Connected'
           }}
         </strong>
       </li>
+      <li class="nav-link" v-on:click="reconnectUser">
+        {{
+        getAddress()
+        }}
+      </li>
     </ul>
-    <transaction-modal
-      v-if="showModal"
-      :transactionData="transactionObject"
-      @completed="onCompleted"
-    />
-    <transaction-modal
-      v-if="showModalConfirmed"
-      :transactionData="transactionObject"
-      @completed="onCompletedConfirmed"
-    />
+    <transaction-modal v-if="showModal" :transactionData="transactionObject" @completed="onCompleted" />
+    <transaction-modal v-if="showModalConfirmed" :transactionData="transactionObject"
+      @completed="onCompletedConfirmed" />
   </nav>
 </template>
 
 <script>
 // importing common function
+import connect from '../composables/connect/index'
 import mixin from '../libs/mixinViews'
 import TransactionModal from './TransactionModal.vue'
-import axios from 'axios'
 
 export default {
   mixins: [mixin],
@@ -51,7 +49,27 @@ export default {
       const decimals = 3
       return Number(Math.round(value + 'e' + decimals) + 'e-' + decimals)
     },
-
+    shortAddress(address) {
+      if (address) {
+        let first = address.slice(0, 6)
+        let last = address.slice(-4)
+        address = first + '...' + last
+      }
+      return address
+    },
+    getAddress() {
+      return window.bc.info.mainAccount ? this.shortAddress(window.bc.info.mainAccount) + '@'
+        + (window.bc.info.walletConnect ? 'Wallet Connect' : 'MetaMask') : ''
+    },
+    async reconnectUser() {
+      const { connectWalletConnect, disconnectWallet } = connect()
+      if (window.bc.info.walletConnect) {
+        await disconnectWallet()
+      } else {
+        await connectWalletConnect()
+      }
+      window.location.reload()
+    },
     showTransactionDetails(txnInfo) {
       this.transactionObject.contract = txnInfo.contract
       this.transactionObject.txHash = txnInfo.txHash
@@ -105,4 +123,6 @@ export default {
 }
 </script>
 
-<style></style>
+<style>
+
+</style>
