@@ -8,7 +8,7 @@ export const provider = (forceRecreate = true) => {
     providerInst = new WalletConnectProvider({
       infuraId,
       rpc: {
-        5: `wss://goerli.infura.io/ws/v3/${infuraId}`, // goerli
+        5: `https://goerli.infura.io/v3/${infuraId}`, // goerli
         80001: `https://polygon-mumbai.infura.io/v3/${infuraId}`, // mumbai
       },
     })
